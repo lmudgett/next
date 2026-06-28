@@ -1,9 +1,6 @@
 {
   "name": "next-wild-oasis",
   "version": "0.1.0",
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-  },
   "private": true,
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -20,7 +17,9 @@
     "start": "next start",
     "lint": "eslint src __tests__",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -51,6 +50,7 @@
     "postcss": "^8.5.16",
     "prisma": "^7.8.0",
     "tailwindcss": "^4.3.1",
+    "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   }
 }
