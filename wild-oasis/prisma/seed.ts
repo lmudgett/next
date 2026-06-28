@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { hashPassword } from "../src/lib/password";
 
 const adapter = new PrismaBetterSqlite3({
   url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
@@ -28,6 +29,16 @@ async function main() {
   await prisma.guests.deleteMany();
   await prisma.cabin.deleteMany();
   await prisma.settings.deleteMany();
+  await prisma.user.deleteMany();
+
+  // Demo login user (shown on the login page).
+  await prisma.user.create({
+    data: {
+      email: "admin@thewildoasis.com",
+      name: "Admin",
+      passwordHash: hashPassword("password123"),
+    },
+  });
 
   await prisma.settings.create({
     data: {

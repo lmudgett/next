@@ -30,6 +30,9 @@ pnpm dev          # http://localhost:3000  (redirects to /dashboard)
 The repo includes a pre-seeded `prisma/dev.db`, so `pnpm dev` works without
 seeding; run `pnpm seed` any time to reset to a known demo dataset.
 
+**Sign in with the demo account:** `admin@thewildoasis.com` / `password123`
+(also shown on the login screen). The whole dashboard is gated behind auth.
+
 ### Scripts
 
 | Command | Description |
@@ -89,6 +92,9 @@ __tests__/             # unit tests, mirroring src/
 - **Error boundaries** — a dashboard `error.tsx` catches page errors and offers
   a "Try again" recovery inside the app shell, with a `global-error.tsx`
   last-resort boundary for root-level failures.
+- **Authentication** — credentials login with hashed passwords (scrypt), a
+  signed **JWT session cookie** (`jose`, httpOnly), and **middleware** that
+  gates the whole dashboard and redirects to `/login`.
 
 ## Data model
 

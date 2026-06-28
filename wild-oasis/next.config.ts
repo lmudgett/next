@@ -9,16 +9,7 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "8mb",
     },
   },
-  async redirects() {
-    return [
-      // temp till get auth working
-      {
-        source: "/",
-        destination: "/dashboard",
-        permanent: true,
-      },
-    ];
-  },
+  // Routing for "/" and auth redirects is handled in middleware.ts.
 };
 
 export default nextConfig;
