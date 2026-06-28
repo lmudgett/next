@@ -2,7 +2,7 @@
 import { useTransition } from "react";
 import toast from "react-hot-toast";
 import { Sono } from "next/font/google";
-import { HiTrash, HiPencil, HiClipboard } from "react-icons/hi2";
+import { HiTrash, HiPencil, HiClipboard, HiCalendarDays } from "react-icons/hi2";
 import { formatCurrency } from "@/lib/utils";
 import { CabinFormData } from "@/lib/validations/cabins";
 import { ToastConfirmation } from "@/components/ui/ToastConfirmation";
@@ -14,14 +14,20 @@ import {
   updateCabinAction,
 } from "@/server/actions/cabins";
 import { FormCabin } from "./FormCabin";
+import { CabinAvailability } from "./CabinAvailability";
+import type { BookedRange } from "@/components/bookings/AvailabilityCalendar";
 
 const sono = Sono({ subsets: ["latin"], weight: "600" });
 
 type CabinTableRowProps = {
   cabin: CabinFormData;
+  bookings: BookedRange[];
 };
 
-export const CabinTableRow: React.FC<CabinTableRowProps> = ({ cabin }) => {
+export const CabinTableRow: React.FC<CabinTableRowProps> = ({
+  cabin,
+  bookings,
+}) => {
   const { id, name, maxCapacity, discount, regularPrice, imageBase64 } = cabin;
   const [isDeletePending, startDeleteTransition] = useTransition();
   const [isCopyPending, startCopyTransition] = useTransition();
@@ -116,6 +122,20 @@ export const CabinTableRow: React.FC<CabinTableRowProps> = ({ cabin }) => {
                     >
                       <Menu.Button icon={<HiClipboard />}>Copy</Menu.Button>
                     </ToastConfirmation>
+                    <Modal>
+                      <Modal.ButtonOpen>
+                        <Menu.Button icon={<HiCalendarDays />}>
+                          Availability
+                        </Menu.Button>
+                      </Modal.ButtonOpen>
+                      <Modal.Window>
+                        <CabinAvailability
+                          cabinId={id}
+                          cabinName={cabin.name}
+                          bookings={bookings}
+                        />
+                      </Modal.Window>
+                    </Modal>
                     <ToastConfirmation
                       buttonName="Confirm Delete"
                       messageBody={`Are you sure you want to delete cabin ${cabin.name}?`}

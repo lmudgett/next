@@ -1,7 +1,9 @@
 "use client";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { DateRange } from "react-day-picker";
 import {
   bookingFormSchema,
   BookingFormInput,
@@ -10,37 +12,49 @@ import {
 import { CabinFormData } from "@/lib/validations/cabins";
 import type { GuestOption } from "@/server/services/guests";
 import { createBookingAction } from "@/server/actions/bookings";
+import { formatDate, toDateInput, parseDateInput } from "@/lib/utils";
+import { AvailabilityCalendar } from "./AvailabilityCalendar";
+
+export type ExistingBooking = {
+  cabinId: number;
+  startDate: Date | string;
+  endDate: Date | string;
+};
 
 type FormBookingProps = {
   cabins: CabinFormData[];
   guests: GuestOption[];
   breakfastPrice: number;
-  onClose?: () => void;
+  existingBookings: ExistingBooking[];
+  defaults?: { cabinId?: string; startDate?: string; endDate?: string };
 };
 
 const STATUSES = ["unconfirmed", "confirmed", "checked-in", "checked-out"];
 
-const Error = ({ message }: { message?: string }) =>
+const FieldError = ({ message }: { message?: string }) =>
   message ? <p className="text-red-600 text-[1.3rem]">{message}</p> : null;
 
 export const FormBooking = ({
   cabins,
   guests,
   breakfastPrice,
-  onClose,
+  existingBookings,
+  defaults,
 }: FormBookingProps) => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<BookingFormInput>({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
-      cabinId: "",
+      cabinId: defaults?.cabinId ?? "",
       guestId: "",
-      startDate: "",
-      endDate: "",
+      startDate: defaults?.startDate ?? "",
+      endDate: defaults?.endDate ?? "",
       numberOfGuests: 1,
       status: "unconfirmed",
       hasBreakfast: false,
@@ -49,6 +63,27 @@ export const FormBooking = ({
     },
   });
 
+  const selectedCabinId = watch("cabinId");
+  const startStr = watch("startDate");
+  const endStr = watch("endDate");
+
+  const cabinBookings = existingBookings.filter(
+    (b) => String(b.cabinId) === selectedCabinId
+  );
+
+  const range: DateRange | undefined = startStr
+    ? { from: parseDateInput(startStr), to: endStr ? parseDateInput(endStr) : undefined }
+    : undefined;
+
+  const handleRange = (r?: DateRange) => {
+    setValue("startDate", r?.from ? toDateInput(r.from) : "", {
+      shouldValidate: true,
+    });
+    setValue("endDate", r?.to ? toDateInput(r.to) : "", {
+      shouldValidate: true,
+    });
+  };
+
   const onSubmit = async (data: BookingFormInput) => {
     const cabin = cabins.find((c) => String(c.id) === data.cabinId);
     if (!cabin) {
@@ -56,20 +91,21 @@ export const FormBooking = ({
       return;
     }
 
-    const start = new Date(data.startDate);
-    const end = new Date(data.endDate);
+    const start = parseDateInput(data.startDate);
+    const end = parseDateInput(data.endDate);
     const nights = Math.max(
       1,
       Math.round((end.getTime() - start.getTime()) / 86_400_000)
     );
+
     const cabinPrice = (cabin.regularPrice - (cabin.discount || 0)) * nights;
     const extraPrice = data.hasBreakfast
       ? breakfastPrice * nights * data.numberOfGuests
       : 0;
 
     const payload: BookingsFormData = {
-      startDate: start,
-      endDate: end,
+      startDate: new Date(data.startDate),
+      endDate: new Date(data.endDate),
       numberOfNights: nights,
       numberOfGuests: data.numberOfGuests,
       cabinPrice,
@@ -86,8 +122,7 @@ export const FormBooking = ({
     const res = await createBookingAction(payload);
     if (res.success) {
       toast.success("Booking created");
-      reset();
-      onClose?.();
+      router.push("/bookings");
     } else {
       toast.error(`Unable to create booking: ${res.appError?.message ?? ""}`);
     }
@@ -105,7 +140,7 @@ export const FormBooking = ({
             </option>
           ))}
         </select>
-        <Error message={errors.cabinId?.message} />
+        <FieldError message={errors.cabinId?.message} />
       </div>
 
       <div className="form-row">
@@ -118,20 +153,32 @@ export const FormBooking = ({
             </option>
           ))}
         </select>
-        <Error message={errors.guestId?.message} />
+        <FieldError message={errors.guestId?.message} />
       </div>
 
-      <div className="form-row">
-        <label htmlFor="startDate">Start date</label>
-        <input id="startDate" type="date" {...register("startDate")} />
-        <Error message={errors.startDate?.message} />
-      </div>
-
-      <div className="form-row">
-        <label htmlFor="endDate">End date</label>
-        <input id="endDate" type="date" {...register("endDate")} />
-        <Error message={errors.endDate?.message} />
-      </div>
+      {selectedCabinId ? (
+        <div className="form-row">
+          <label>Dates</label>
+          <div>
+            <AvailabilityCalendar
+              bookings={cabinBookings}
+              selected={range}
+              onSelect={handleRange}
+            />
+            <p className="text-[1.4rem] mt-2">
+              {range?.from && range?.to
+                ? `${formatDate(new Date(startStr))} → ${formatDate(
+                    new Date(endStr)
+                  )}`
+                : "Select a check-in and check-out date."}
+            </p>
+            <FieldError message={errors.startDate?.message} />
+            <FieldError message={errors.endDate?.message} />
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-500">Select a cabin to choose available dates.</p>
+      )}
 
       <div className="form-row">
         <label htmlFor="numberOfGuests">Number of guests</label>
@@ -141,7 +188,7 @@ export const FormBooking = ({
           min={1}
           {...register("numberOfGuests", { valueAsNumber: true })}
         />
-        <Error message={errors.numberOfGuests?.message} />
+        <FieldError message={errors.numberOfGuests?.message} />
       </div>
 
       <div className="form-row">
@@ -173,7 +220,7 @@ export const FormBooking = ({
       <div className="form-row">
         <button
           type="button"
-          onClick={() => onClose?.()}
+          onClick={() => router.push("/bookings")}
           className="button-type-secondary size-medium-button"
         >
           Cancel

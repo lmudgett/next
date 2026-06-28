@@ -1,25 +1,14 @@
 "use client";
+import Link from "next/link";
 import { BookingsFormData } from "@/lib/validations/bookings";
-import { CabinFormData } from "@/lib/validations/cabins";
-import type { GuestOption } from "@/server/services/guests";
 import Table from "@/components/ui/Table";
-import Modal from "@/components/ui/Modal";
 import { BookingTableRow, bookingColumns } from "./BookingTableRow";
-import { FormBooking } from "./FormBooking";
 
 type BookingsTableProps = {
   bookings?: BookingsFormData[];
-  cabins: CabinFormData[];
-  guests: GuestOption[];
-  breakfastPrice: number;
 };
 
-export const BookingsTable: React.FC<BookingsTableProps> = ({
-  bookings,
-  cabins,
-  guests,
-  breakfastPrice,
-}) => {
+export const BookingsTable: React.FC<BookingsTableProps> = ({ bookings }) => {
   return (
     <>
       <Table>
@@ -38,18 +27,12 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
           )}
         />
       </Table>
-      <Modal>
-        <Modal.ButtonOpen className="button-type-primary size-medium-button">
-          Add Booking
-        </Modal.ButtonOpen>
-        <Modal.Window>
-          <FormBooking
-            cabins={cabins}
-            guests={guests}
-            breakfastPrice={breakfastPrice}
-          />
-        </Modal.Window>
-      </Modal>
+      <Link
+        href="/bookings/new"
+        className="button-type-primary size-medium-button"
+      >
+        Add Booking
+      </Link>
     </>
   );
 };

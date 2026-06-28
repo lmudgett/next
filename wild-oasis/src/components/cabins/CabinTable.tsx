@@ -9,11 +9,21 @@ import Modal from "@/components/ui/Modal";
 import { Sort } from "@/components/ui/Sort";
 import Filter from "@/components/ui/Filter";
 
-type CabinTableProps = {
-  cabins?: CabinFormData[];
+type CabinBooking = {
+  cabinId: number;
+  startDate: Date | string;
+  endDate: Date | string;
 };
 
-export const CabinTable: React.FC<CabinTableProps> = ({ cabins }) => {
+type CabinTableProps = {
+  cabins?: CabinFormData[];
+  bookings?: CabinBooking[];
+};
+
+export const CabinTable: React.FC<CabinTableProps> = ({
+  cabins,
+  bookings = [],
+}) => {
   const [sortedCabins, setSortedCabins] = useState<CabinFormData[] | undefined>(
     cabins
   );
@@ -89,7 +99,13 @@ export const CabinTable: React.FC<CabinTableProps> = ({ cabins }) => {
         </Table.Header>
         <Table.Body
           data={sortedCabins}
-          render={(cabin) => <CabinTableRow cabin={cabin} key={cabin.id} />}
+          render={(cabin) => (
+            <CabinTableRow
+              cabin={cabin}
+              bookings={bookings.filter((b) => b.cabinId === cabin.id)}
+              key={cabin.id}
+            />
+          )}
         />
       </Table>
       <Modal>

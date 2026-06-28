@@ -2,6 +2,7 @@ import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { CabinTable } from "@/components/cabins/CabinTable";
 import { getAllCabinsAction } from "@/server/actions/cabins";
+import { getAllBookingsAction } from "@/server/actions/bookings";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 import "./style.css";
 
@@ -21,7 +22,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function CabinsContent() {
-  const { success, cabins, message } = await getCabins();
+  const [{ success, cabins, message }, bookingsRes] = await Promise.all([
+    getCabins(),
+    getAllBookingsAction(),
+  ]);
 
   if (!success) {
     return (
@@ -32,9 +36,15 @@ async function CabinsContent() {
     );
   }
 
+  const bookings = (bookingsRes.bookings ?? []).map((b) => ({
+    cabinId: b.cabinId,
+    startDate: b.startDate,
+    endDate: b.endDate,
+  }));
+
   return (
     <div className="row-vertical">
-      <CabinTable cabins={cabins} />
+      <CabinTable cabins={cabins} bookings={bookings} />
     </div>
   );
 }

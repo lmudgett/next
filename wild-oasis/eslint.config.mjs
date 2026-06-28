@@ -6,6 +6,9 @@ const eslintConfig = [
   {
     rules: {
       "@next/next/no-img-element": "off",
+      // react-hook-form's watch() is flagged by the React Compiler lint as an
+      // "incompatible library"; RHF is a deliberate choice, so silence it.
+      "react-hooks/incompatible-library": "off",
     },
   },
 ];
