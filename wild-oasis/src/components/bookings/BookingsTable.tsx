@@ -1,14 +1,24 @@
 "use client";
 import Link from "next/link";
 import { BookingsFormData } from "@/lib/validations/bookings";
+import { CabinFormData } from "@/lib/validations/cabins";
+import type { GuestOption } from "@/server/services/guests";
 import Table from "@/components/ui/Table";
 import { BookingTableRow, bookingColumns } from "./BookingTableRow";
 
 type BookingsTableProps = {
   bookings?: BookingsFormData[];
+  cabins: CabinFormData[];
+  guests: GuestOption[];
+  breakfastPrice: number;
 };
 
-export const BookingsTable: React.FC<BookingsTableProps> = ({ bookings }) => {
+export const BookingsTable: React.FC<BookingsTableProps> = ({
+  bookings = [],
+  cabins,
+  guests,
+  breakfastPrice,
+}) => {
   return (
     <>
       <Table>
@@ -19,11 +29,19 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({ bookings }) => {
           <Table.Cell>Status</Table.Cell>
           <Table.Cell>Amount</Table.Cell>
           <Table.Cell>Paid</Table.Cell>
+          <div></div>
         </Table.Header>
         <Table.Body
           data={bookings}
           render={(booking) => (
-            <BookingTableRow booking={booking} key={booking.id} />
+            <BookingTableRow
+              booking={booking}
+              cabins={cabins}
+              guests={guests}
+              breakfastPrice={breakfastPrice}
+              allBookings={bookings}
+              key={booking.id}
+            />
           )}
         />
       </Table>

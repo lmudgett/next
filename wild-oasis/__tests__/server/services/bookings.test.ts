@@ -12,8 +12,9 @@ jest.mock("@prisma/client", () => {
 import { PrismaClient } from "@prisma/client";
 import {
   getAllBookings,
-  updateCabin,
+  updateBooking,
   createBooking,
+  deleteBooking,
 } from "@/server/services/bookings";
 
 const { bookings } = new (PrismaClient as unknown as new () => {
@@ -88,22 +89,39 @@ describe("createBooking (service)", () => {
   });
 });
 
-describe("updateCabin (booking upsert routing)", () => {
+describe("updateBooking (service)", () => {
   it("updates when an id is present", async () => {
     bookings.update.mockResolvedValue(row);
-    const res = await updateCabin({ ...row });
+    const res = await updateBooking({ ...row });
     expect(res.success).toBe(true);
     expect(bookings.update).toHaveBeenCalled();
     expect(bookings.create).not.toHaveBeenCalled();
   });
 
-  it("creates when no id is present", async () => {
+  it("falls back to create when no id is present", async () => {
     bookings.create.mockResolvedValue(row);
     const { id: _omit, ...noId } = row;
     void _omit;
-    const res = await updateCabin(noId as typeof row);
+    const res = await updateBooking(noId as typeof row);
     expect(res.success).toBe(true);
     expect(bookings.create).toHaveBeenCalled();
     expect(bookings.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("deleteBooking (service)", () => {
+  it("deletes an existing booking", async () => {
+    bookings.findUnique.mockResolvedValue(row);
+    bookings.delete.mockResolvedValue(row);
+    const res = await deleteBooking(1);
+    expect(res.success).toBe(true);
+    expect(bookings.delete).toHaveBeenCalledWith({ where: { id: 1 } });
+  });
+
+  it("refuses to delete a booking that does not exist", async () => {
+    bookings.findUnique.mockResolvedValue(null);
+    const res = await deleteBooking(99);
+    expect(res.success).toBe(false);
+    expect(bookings.delete).not.toHaveBeenCalled();
   });
 });

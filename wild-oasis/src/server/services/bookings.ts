@@ -56,40 +56,27 @@ export async function getAllBookings(): Promise<{
   }
 }
 
-export async function updateCabin(b: BookingsFormData): Promise<AppPromise> {
-  let res: AppPromise;
-  if (b.id) {
-    res = await bookingsDao.updateBookings(b.id, {
-      startDate: b.startDate,
-      endDate: b.endDate,
-      numberOfNights: b.numberOfNights,
-      numberOfGuests: b.numberOfGuests,
-      cabinPrice: b.cabinPrice,
-      extraPrice: b.extraPrice,
-      totalPrice: b.totalPrice,
-      status: b.status,
-      hasBreakfast: b.hasBreakfast,
-      hasPaid: b.hasPaid,
-      notes: b.notes,
-      cabinId: b.cabinId,
-      guestId: b.guestId,
-    });
-  } else {
-    res = await bookingsDao.addBookings({
-      startDate: b.startDate,
-      endDate: b.endDate,
-      numberOfNights: b.numberOfNights,
-      numberOfGuests: b.numberOfGuests,
-      cabinPrice: b.cabinPrice,
-      extraPrice: b.extraPrice,
-      totalPrice: b.totalPrice,
-      status: b.status,
-      hasBreakfast: b.hasBreakfast,
-      hasPaid: b.hasPaid,
-      notes: b.notes,
-      cabinId: b.cabinId,
-      guestId: b.guestId,
-    });
+export async function updateBooking(b: BookingsFormData): Promise<AppPromise> {
+  if (!b.id) {
+    return createBooking(b);
   }
-  return res;
+  return bookingsDao.updateBookings(b.id, {
+    startDate: b.startDate,
+    endDate: b.endDate,
+    numberOfNights: b.numberOfNights,
+    numberOfGuests: b.numberOfGuests,
+    cabinPrice: b.cabinPrice,
+    extraPrice: b.extraPrice,
+    totalPrice: b.totalPrice,
+    status: b.status,
+    hasBreakfast: b.hasBreakfast,
+    hasPaid: b.hasPaid,
+    notes: b.notes,
+    cabinId: b.cabinId,
+    guestId: b.guestId,
+  });
+}
+
+export async function deleteBooking(id: number): Promise<AppPromise> {
+  return bookingsDao.deleteBookings(id);
 }

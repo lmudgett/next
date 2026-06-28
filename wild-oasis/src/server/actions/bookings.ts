@@ -36,3 +36,27 @@ export const createBookingAction = async (
     return { success: false, appError: convertToApplicationError(error) };
   }
 };
+
+export const updateBookingAction = async (
+  data: BookingsFormData
+): Promise<AppPromise> => {
+  try {
+    bookingsSchema.parse(data);
+    const res = await bookingsUC.updateBooking(data);
+    if (res.success) {
+      revalidatePath("/bookings");
+      return { success: true };
+    }
+    throw res.appError;
+  } catch (error) {
+    return { success: false, appError: convertToApplicationError(error) };
+  }
+};
+
+export const cancelBookingAction = async (id: number): Promise<AppPromise> => {
+  const res = await bookingsUC.deleteBooking(id);
+  if (res.success) {
+    revalidatePath("/bookings");
+  }
+  return res;
+};

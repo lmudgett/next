@@ -11,7 +11,10 @@ import {
 } from "@/lib/validations/bookings";
 import { CabinFormData } from "@/lib/validations/cabins";
 import type { GuestOption } from "@/server/services/guests";
-import { createBookingAction } from "@/server/actions/bookings";
+import {
+  createBookingAction,
+  updateBookingAction,
+} from "@/server/actions/bookings";
 import { formatDate, toDateInput, parseDateInput } from "@/lib/utils";
 import { AvailabilityCalendar } from "./AvailabilityCalendar";
 
@@ -21,12 +24,30 @@ export type ExistingBooking = {
   endDate: Date | string;
 };
 
+type FormBookingDefaults = {
+  cabinId?: string;
+  guestId?: string;
+  startDate?: string;
+  endDate?: string;
+  numberOfGuests?: number;
+  status?: string;
+  hasBreakfast?: boolean;
+  hasPaid?: boolean;
+  notes?: string;
+};
+
 type FormBookingProps = {
   cabins: CabinFormData[];
   guests: GuestOption[];
   breakfastPrice: number;
   existingBookings: ExistingBooking[];
-  defaults?: { cabinId?: string; startDate?: string; endDate?: string };
+  // Present => editing that booking; absent => creating.
+  bookingId?: number;
+  // Provided => rendered in a modal (close on done); absent => page (redirect).
+  onClose?: () => void;
+  // Optional extra cleanup when used inside a row menu (e.g. close the menu).
+  onFormEvent?: () => void;
+  defaults?: FormBookingDefaults;
 };
 
 const STATUSES = ["unconfirmed", "confirmed", "checked-in", "checked-out"];
@@ -39,9 +60,21 @@ export const FormBooking = ({
   guests,
   breakfastPrice,
   existingBookings,
+  bookingId,
+  onClose,
+  onFormEvent,
   defaults,
 }: FormBookingProps) => {
   const router = useRouter();
+  const close = () => {
+    onFormEvent?.();
+    if (onClose) {
+      onClose();
+      router.refresh();
+    } else {
+      router.push("/bookings");
+    }
+  };
   const {
     register,
     handleSubmit,
@@ -52,14 +85,14 @@ export const FormBooking = ({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       cabinId: defaults?.cabinId ?? "",
-      guestId: "",
+      guestId: defaults?.guestId ?? "",
       startDate: defaults?.startDate ?? "",
       endDate: defaults?.endDate ?? "",
-      numberOfGuests: 1,
-      status: "unconfirmed",
-      hasBreakfast: false,
-      hasPaid: false,
-      notes: "",
+      numberOfGuests: defaults?.numberOfGuests ?? 1,
+      status: defaults?.status ?? "unconfirmed",
+      hasBreakfast: defaults?.hasBreakfast ?? false,
+      hasPaid: defaults?.hasPaid ?? false,
+      notes: defaults?.notes ?? "",
     },
   });
 
@@ -104,6 +137,7 @@ export const FormBooking = ({
       : 0;
 
     const payload: BookingsFormData = {
+      id: bookingId,
       startDate: new Date(data.startDate),
       endDate: new Date(data.endDate),
       numberOfNights: nights,
@@ -119,12 +153,18 @@ export const FormBooking = ({
       guestId: Number(data.guestId),
     };
 
-    const res = await createBookingAction(payload);
+    const res = bookingId
+      ? await updateBookingAction(payload)
+      : await createBookingAction(payload);
     if (res.success) {
-      toast.success("Booking created");
-      router.push("/bookings");
+      toast.success(bookingId ? "Booking updated" : "Booking created");
+      close();
     } else {
-      toast.error(`Unable to create booking: ${res.appError?.message ?? ""}`);
+      toast.error(
+        `Unable to ${bookingId ? "update" : "create"} booking: ${
+          res.appError?.message ?? ""
+        }`
+      );
     }
   };
 
@@ -220,7 +260,7 @@ export const FormBooking = ({
       <div className="form-row">
         <button
           type="button"
-          onClick={() => router.push("/bookings")}
+          onClick={() => close()}
           className="button-type-secondary size-medium-button"
         >
           Cancel
@@ -230,7 +270,11 @@ export const FormBooking = ({
           disabled={isSubmitting}
           className="button-type-primary size-medium-button"
         >
-          {isSubmitting ? "Saving..." : "Create Booking"}
+          {isSubmitting
+            ? "Saving..."
+            : bookingId
+            ? "Update Booking"
+            : "Create Booking"}
         </button>
       </div>
     </form>
