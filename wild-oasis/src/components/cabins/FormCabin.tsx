@@ -1,5 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField } from "@/components/ui/FormField";
@@ -22,6 +23,9 @@ export const FormCabin = ({
   onFormEvent,
   className = "form-regular",
 }: FormCabinProps) => {
+  const router = useRouter();
+  // Used both as a modal (edit, with onClose) and as a page (create, no onClose).
+  const close = onClose ?? (() => router.push("/cabins"));
   const {
     register,
     handleSubmit,
@@ -67,7 +71,7 @@ export const FormCabin = ({
       if (res.success) {
         toast.success("Cabin has been added");
         reset();
-        onClose?.();
+        close();
       } else {
         toast.error("Unable to add cabin");
       }
@@ -115,9 +119,9 @@ export const FormCabin = ({
       <div className="form-row">
         {cabin && <input type="hidden" {...register("id")} />}
         <button
-          type={isEdit ? "button" : "reset"}
+          type="button"
           onClick={() => {
-            onClose?.();
+            close();
             onFormEvent?.();
           }}
           className="button-type-secondary size-medium-button"

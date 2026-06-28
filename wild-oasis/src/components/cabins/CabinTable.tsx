@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { CabinFormData } from "@/lib/validations/cabins";
 import { CabinTableRow } from "./CabinTableRow";
-import { FormCabin } from "./FormCabin";
 import Table from "@/components/ui/Table";
-import Modal from "@/components/ui/Modal";
 import { Sort } from "@/components/ui/Sort";
 import Filter from "@/components/ui/Filter";
 
@@ -108,14 +107,12 @@ export const CabinTable: React.FC<CabinTableProps> = ({
           )}
         />
       </Table>
-      <Modal>
-        <Modal.ButtonOpen className="button-type-primary size-medium-button">
-          Add Cabin
-        </Modal.ButtonOpen>
-        <Modal.Window>
-          <FormCabin isEdit={false} />
-        </Modal.Window>
-      </Modal>
+      <Link
+        href="/cabins/create"
+        className="button-type-primary size-medium-button text-center"
+      >
+        Add Cabin
+      </Link>
     </>
   );
 };

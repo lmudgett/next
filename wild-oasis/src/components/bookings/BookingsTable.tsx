@@ -28,8 +28,8 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({ bookings }) => {
         />
       </Table>
       <Link
-        href="/bookings/new"
-        className="button-type-primary size-medium-button"
+        href="/bookings/create"
+        className="button-type-primary size-medium-button text-center"
       >
         Add Booking
       </Link>

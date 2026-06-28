@@ -29,7 +29,7 @@ export const CabinAvailability = ({
     if (range?.from) params.set("from", toDateInput(range.from));
     if (range?.to) params.set("to", toDateInput(range.to));
     onClose?.();
-    router.push(`/bookings/new?${params.toString()}`);
+    router.push(`/bookings/create?${params.toString()}`);
   };
 
   return (

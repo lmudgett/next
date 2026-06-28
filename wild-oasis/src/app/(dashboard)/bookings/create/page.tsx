@@ -8,7 +8,7 @@ import { getAllBookingsAction } from "@/server/actions/bookings";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "New Booking" };
 
-export default async function NewBookingPage({
+export default async function CreateBookingPage({
   searchParams,
 }: {
   searchParams: Promise<{ cabinId?: string; from?: string; to?: string }>;
