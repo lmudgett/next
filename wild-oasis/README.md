@@ -80,6 +80,9 @@ __tests__/             # unit tests, mirroring src/
 - **Typed error handling** — operations return a discriminated result
   (`{ success, appError }`) via a shared `ApplicationError`, instead of throwing
   across layers.
+- **Streaming UI** — data-driven pages render the shell + heading instantly and
+  stream their table/form in via React `<Suspense>` boundaries with skeleton
+  fallbacks (see `src/app/(dashboard)/*/page.tsx` + `components/ui/Skeleton`).
 
 ## Data model
 

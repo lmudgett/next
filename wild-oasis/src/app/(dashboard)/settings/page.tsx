@@ -1,7 +1,12 @@
+import { Suspense } from "react";
 import { FormSettings } from "@/components/settings/FormSettings";
 import { getSettingsAction } from "@/server/actions/settings";
+import { FormSkeleton } from "@/components/ui/Skeleton";
 
-export default async function SettingsPage() {
+// Render dynamically so the settings form streams on each request.
+export const dynamic = "force-dynamic";
+
+async function SettingsContent() {
   const { success, settings, message } = await getSettingsAction();
 
   if (!success) {
@@ -13,10 +18,16 @@ export default async function SettingsPage() {
     );
   }
 
+  return <FormSettings settings={settings} />;
+}
+
+export default function SettingsPage() {
   return (
     <div>
       <h1>Update Hotel Settings</h1>
-      <FormSettings settings={settings} />
+      <Suspense fallback={<FormSkeleton fields={4} />}>
+        <SettingsContent />
+      </Suspense>
     </div>
   );
 }
