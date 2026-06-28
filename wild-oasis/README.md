@@ -7,6 +7,8 @@ a clean, layered architecture on a modern Next.js stack.
 > Showcase project — designed to be read and run locally, not deployed. It ships
 > with a seeded SQLite database so you can `clone → install → seed → dev`.
 
+![Bookings page — cabin, guest, dates, status, amount and payment status](docs/bookings.png)
+
 ## Tech stack
 
 - **Next.js 16** (App Router, Server Components & Server Actions) + **React 19**
