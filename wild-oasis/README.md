@@ -86,6 +86,9 @@ __tests__/             # unit tests, mirroring src/
 - **Dynamic metadata** — pages derive their `<title>`/description from live data
   via `generateMetadata` (e.g. "Cabins (6)"), composed through a root title
   template; the data fetch is shared with the page render via React `cache()`.
+- **Error boundaries** — a dashboard `error.tsx` catches page errors and offers
+  a "Try again" recovery inside the app shell, with a `global-error.tsx`
+  last-resort boundary for root-level failures.
 
 ## Data model
 
