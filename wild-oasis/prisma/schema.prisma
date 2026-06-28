@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Cabin {
+  id Int      @id @default(autoincrement())
+  name String @unique
+  maxCapacity Int
+  regularPrice Float
+  discount Float?
+  description String?
+  image Bytes?
+  booking Bookings? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId Int? @unique
+  updated DateTime @default(now())
+}
+
+model Guests {
+  id Int      @id @default(autoincrement())
+  fullName String
+  email String @unique
+  nationality String
+  countryFlag String
+  nationalId String 
+  booking Bookings? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  bookingId Int? @unique
+  updated DateTime @default(now())
+}
+
+model Settings {
+  id Int      @id @default(autoincrement())
+  minBookingLength Int
+  maxBookingLength Int
+  maxGuestNumberPerBooking Int
+  breakfastPrice Float
+  updated DateTime @default(now())
+}
+
+model Bookings {
+  id Int      @id @default(autoincrement())
+  startDate DateTime
+  endDate DateTime
+  numberOfNights Int
+  numberOfGuests Int
+  cabinPrice Float
+  extraPrice Float
+  totalPrice Float
+  status String
+  hasBreakfast Boolean
+  hasPaid Boolean
+  notes String
+  cabins Cabin?
+  guest Guests?
+  updated DateTime @default(now())
+}

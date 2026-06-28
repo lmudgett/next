@@ -1,0 +1,12 @@
+.table-cols-6 {
+  grid-template-columns: 0.6fr 1.8fr 2.2fr 1fr 1fr 1fr;
+}
+
+.cabin-image {
+  display: block;
+  width: 6.4rem;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  object-position: center;
+  transform: scale(1.5) translateX(-7px);
+}

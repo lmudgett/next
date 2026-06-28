@@ -1,0 +1,352 @@
+@import "tailwindcss";
+
+@layer base {
+  * {
+    @apply box-border p-0 m-0 transition-colors duration-300;
+  }
+  html {
+    @apply text-[62.5%];
+  }
+  body {
+    @apply font-["Poppins"] text-gray-700 min-h-screen transition-colors duration-300 text-[1.6rem] leading-[1.5];
+  }
+  button {
+    @apply cursor-pointer;
+    font: inherit;
+    color: inherit;
+    border-radius: 4px;
+  }
+
+  input:focus,
+  button:focus,
+  textarea:focus,
+  select:focus {
+    outline: 2px solid #4f46e5;
+    outline-offset: -1px;
+  }
+
+  :disabled {
+    @apply cursor-not-allowed;
+  }
+  image {
+    @apply max-w-max;
+  }
+  ul {
+    @apply list-none;
+  }
+
+  a {
+    @apply no-underline;
+  }
+
+  h1 {
+    font-size: 3rem;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 2rem;
+    font-weight: 600;
+  }
+  h3 {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+  p,
+  h4,
+  h5,
+  h6 {
+    @apply break-words;
+    hyphens: auto;
+  }
+
+  form {
+    padding: 2.4rem 4rem;
+    background-color: #fff;
+    border: 1px solid #f3f4f6;
+    border-radius: 7px;
+    overflow: hidden;
+    font-size: 1.4rem;
+  }
+
+  input {
+    border: 1px solid #d1d5db;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 0.8rem 1.2rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  label {
+    font-weight: 500;
+  }
+}
+
+@layer utilities {
+  .container {
+    max-width: 120rem;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3.2rem;
+  }
+
+  .row-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 1.6rem;
+  }
+
+  .row-horizontal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .form-row {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 24rem 1fr 1.2fr;
+    gap: 2.4rem;
+
+    padding: 1.2rem 0;
+
+    &:first-child {
+      padding-top: 0;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #dcfce7;
+    }
+
+    &:has(button) {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1.2rem;
+    }
+  }
+  .error {
+    font-size: 1.4rem;
+    color: #b91c1c;
+  }
+
+  .size-table-button {
+    padding: 0.6rem 0.8rem;
+    text-align: center;
+  }
+
+  .size-small-button {
+    font-size: 1.2rem;
+    padding: 0.4rem 0.8rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .size-medium-button {
+    font-size: 1.4rem;
+    padding: 1.2rem 1.6rem;
+    font-weight: 500;
+  }
+
+  .size-large-button {
+    font-size: 1.6rem;
+    padding: 1.2rem 2.4rem;
+    font-weight: 500;
+  }
+
+  .button-type-primary {
+    color: #eef2ff;
+    background-color: #4f46e5;
+
+    &:hover {
+      background-color: #4338ca;
+    }
+  }
+
+  .button-type-secondary {
+    color: var(--color-grey-600);
+    background: #fff;
+    border: 1px solid #e5e7eb;
+
+    &:hover {
+      background-color: #f9fafb;
+    }
+  }
+
+  .button-type-danger {
+    color: #fee2e2;
+    background-color: #b91c1c;
+
+    &:hover {
+      background-color: #991b1b;
+    }
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    transition: all 0.5s;
+  }
+
+  .modal-content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    border-radius: 9px;
+    box-shadow: 0 2.4rem 3.2rem rgba(0, 0, 0, 0.12);
+    padding: 3.2rem 4rem;
+    transition: all 0.5s;
+    z-index: 100;
+  }
+
+  .modal-button-close {
+    background: none;
+    border: none;
+    padding: 0.4rem;
+    border-radius: 5px;
+    transform: translateX(0.8rem);
+    transition: all 0.2s;
+    position: absolute;
+    top: 1.2rem;
+    right: 1.9rem;
+
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
+    & svg {
+      width: 2.4rem;
+      height: 2.4rem;
+      color: #6b7280;
+    }
+  }
+
+  .form-regular {
+    padding: 2.4rem 4rem;
+
+    /* Box */
+    background-color: #fff;
+    border: 1px solid #f3f4f6;
+    border-radius: 7px;
+    overflow: hidden;
+    font-size: 1.4rem;
+  }
+
+  .form-modal {
+    width: 80rem;
+    font-size: 1.4rem;
+  }
+
+  .component-table {
+    @apply border-gray-200 bg-white;
+    border: 1px solid;
+    font-size: 1.4rem;
+    border-radius: 7px;
+    overflow: hidden;
+  }
+
+  .component-table-row {
+    display: grid;
+    column-gap: 2.4rem;
+    align-items: center;
+    padding: 1.4rem 2.8rem;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #1f2937;
+    }
+  }
+
+  .component-table-header {
+    @apply border-gray-200 text-gray-600 bg-gray-50 border-b-gray-100;
+    display: grid;
+    column-gap: 2.4rem;
+    align-items: center;
+    border-bottom: 1px solid;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 600;
+    padding: 1.6rem 2.4rem;
+  }
+
+  .component-table-footer {
+    background-color: #f9fafb;
+    display: flex;
+    justify-content: center;
+    padding: 1.2rem;
+
+    /* This will hide the footer when it contains no child elements. Possible thanks to the parent selector :has 🎉 */
+    &:not(:has(*)) {
+      display: none;
+    }
+  }
+
+  .component-table-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .component-table-menu-toggle {
+    background: none;
+    border: none;
+    padding: 0.4rem;
+    border-radius: 5px;
+    transform: translateX(0.8rem);
+    transition: all 0.2s;
+    z-index: 70;
+    &:hover {
+      background-color: #f3f4f6;
+    }
+
+    & svg {
+      width: 2.4rem;
+      height: 2.4rem;
+      color: #374151;
+    }
+  }
+
+  .component-table-menu-list {
+    position: fixed;
+    z-index: 80;
+    background-color: #fff;
+    box-shadow: 0px 0.6rem 2.4rem rgba(0, 0, 0, 0.06);
+    border-radius: 7px;
+  }
+
+  .component-table-menu-button {
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 1.2rem 2.4rem;
+    font-size: 1.4rem;
+    transition: all 0.2s;
+
+    display: flex;
+    align-items: left;
+    gap: 1.6rem;
+
+    &:hover {
+      background-color: #f9fafb;
+    }
+
+    & svg {
+      width: 1.6rem;
+      height: 1.6rem;
+      color: #9ca3af;
+      transition: all 0.3s;
+    }
+  }
+}
