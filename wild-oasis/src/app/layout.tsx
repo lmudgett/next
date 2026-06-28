@@ -6,8 +6,13 @@ import "./globals.css";
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
-  title: "Next Wild Oasis",
-  description: "",
+  // Pages set their own title; it composes into this template.
+  title: {
+    default: "The Wild Oasis",
+    template: "%s · The Wild Oasis",
+  },
+  description:
+    "Staff dashboard for managing cabins, bookings, guests, and settings at The Wild Oasis hotel.",
 };
 
 export default function RootLayout({

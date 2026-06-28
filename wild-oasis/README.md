@@ -83,6 +83,9 @@ __tests__/             # unit tests, mirroring src/
 - **Streaming UI** — data-driven pages render the shell + heading instantly and
   stream their table/form in via React `<Suspense>` boundaries with skeleton
   fallbacks (see `src/app/(dashboard)/*/page.tsx` + `components/ui/Skeleton`).
+- **Dynamic metadata** — pages derive their `<title>`/description from live data
+  via `generateMetadata` (e.g. "Cabins (6)"), composed through a root title
+  template; the data fetch is shared with the page render via React `cache()`.
 
 ## Data model
 

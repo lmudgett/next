@@ -1,4 +1,5 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
+import type { Metadata } from "next";
 import { CabinTable } from "@/components/cabins/CabinTable";
 import { getAllCabinsAction } from "@/server/actions/cabins";
 import { TableSkeleton } from "@/components/ui/Skeleton";
@@ -7,8 +8,20 @@ import "./style.css";
 // Render dynamically so the data below actually streams on each request.
 export const dynamic = "force-dynamic";
 
+// Cached per request so generateMetadata and the page share a single query.
+const getCabins = cache(getAllCabinsAction);
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { cabins } = await getCabins();
+  const count = cabins?.length ?? 0;
+  return {
+    title: `Cabins (${count})`,
+    description: `Manage the ${count} cabins at The Wild Oasis.`,
+  };
+}
+
 async function CabinsContent() {
-  const { success, cabins, message } = await getAllCabinsAction();
+  const { success, cabins, message } = await getCabins();
 
   if (!success) {
     return (
