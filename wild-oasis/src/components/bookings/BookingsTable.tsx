@@ -11,8 +11,9 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({ bookings }) => {
   return (
     <Table>
       <Table.Header className={bookingColumns}>
+        <Table.Cell>Cabin</Table.Cell>
+        <Table.Cell>Guest</Table.Cell>
         <Table.Cell>Dates</Table.Cell>
-        <Table.Cell>Guests</Table.Cell>
         <Table.Cell>Status</Table.Cell>
         <Table.Cell>Amount</Table.Cell>
         <Table.Cell>Paid</Table.Cell>

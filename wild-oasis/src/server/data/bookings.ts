@@ -1,4 +1,4 @@
-import { Bookings } from "@prisma/client";
+import { Bookings, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { AppPromise } from "@/types/app-promise";
 import {
@@ -7,8 +7,15 @@ import {
   ErrorType,
 } from "@/types/errors";
 
-export async function getAllBookings(): Promise<Bookings[]> {
-  const bookings = await prisma.bookings.findMany();
+export type BookingWithRelations = Prisma.BookingsGetPayload<{
+  include: { cabin: true; guest: true };
+}>;
+
+export async function getAllBookings(): Promise<BookingWithRelations[]> {
+  const bookings = await prisma.bookings.findMany({
+    include: { cabin: true, guest: true },
+    orderBy: { startDate: "desc" },
+  });
   return bookings;
 }
 

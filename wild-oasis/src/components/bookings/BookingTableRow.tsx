@@ -12,7 +12,7 @@ const STATUS_STYLES: Record<string, string> = {
   "checked-out": "bg-gray-200 text-gray-600",
 };
 
-const BOOKING_COLS = "grid-cols-[2.4fr_1fr_1.2fr_1fr_0.8fr]";
+const BOOKING_COLS = "grid-cols-[1fr_1.6fr_2fr_1.1fr_1fr_0.8fr]";
 export const bookingColumns = BOOKING_COLS;
 
 type BookingTableRowProps = {
@@ -29,23 +29,30 @@ export const BookingTableRow = ({ booking }: BookingTableRowProps) => {
     status,
     hasBreakfast,
     hasPaid,
+    cabinName,
+    guestName,
+    guestCountryFlag,
   } = booking;
 
   const badge = STATUS_STYLES[status] ?? "bg-gray-100 text-gray-600";
 
   return (
     <Table.Row className={BOOKING_COLS}>
+      <div className={`font-semibold ${sono.className}`}>{cabinName}</div>
+
+      <div className="flex items-center gap-2">
+        {guestCountryFlag && <span>{guestCountryFlag}</span>}
+        <span>{guestName}</span>
+      </div>
+
       <div>
         <div className={`font-semibold ${sono.className}`}>
           {formatDate(startDate)} &rarr; {formatDate(endDate)}
         </div>
         <div className="text-gray-500 text-[1.3rem]">
-          {numberOfNights} night{numberOfNights === 1 ? "" : "s"}
+          {numberOfNights} night{numberOfNights === 1 ? "" : "s"} &middot;{" "}
+          {numberOfGuests} guest{numberOfGuests === 1 ? "" : "s"}
         </div>
-      </div>
-
-      <div>
-        {numberOfGuests} guest{numberOfGuests === 1 ? "" : "s"}
       </div>
 
       <div>

@@ -13,6 +13,8 @@ const validBooking = {
   hasBreakfast: true,
   hasPaid: false,
   notes: "late check-in",
+  cabinId: 3,
+  guestId: 7,
 };
 
 describe("bookingsSchema", () => {

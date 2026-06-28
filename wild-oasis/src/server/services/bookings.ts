@@ -24,6 +24,11 @@ export async function getAllBookings(): Promise<{
         hasBreakfast: b.hasBreakfast,
         hasPaid: b.hasPaid,
         notes: b.notes,
+        cabinId: b.cabinId,
+        guestId: b.guestId,
+        cabinName: b.cabin.name,
+        guestName: b.guest.fullName,
+        guestCountryFlag: b.guest.countryFlag,
       };
     });
     return { success: true, bookings: list };
@@ -48,6 +53,8 @@ export async function updateCabin(b: BookingsFormData): Promise<AppPromise> {
       hasBreakfast: b.hasBreakfast,
       hasPaid: b.hasPaid,
       notes: b.notes,
+      cabinId: b.cabinId,
+      guestId: b.guestId,
     });
   } else {
     res = await bookingsDao.addBookings({
@@ -62,6 +69,8 @@ export async function updateCabin(b: BookingsFormData): Promise<AppPromise> {
       hasBreakfast: b.hasBreakfast,
       hasPaid: b.hasPaid,
       notes: b.notes,
+      cabinId: b.cabinId,
+      guestId: b.guestId,
     });
   }
   return res;

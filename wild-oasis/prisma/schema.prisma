@@ -17,8 +17,7 @@ model Cabin {
   discount Float?
   description String?
   image Bytes?
-  booking Bookings? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  bookingId Int? @unique
+  bookings Bookings[]
   updated DateTime @default(now())
 }
 
@@ -28,9 +27,8 @@ model Guests {
   email String @unique
   nationality String
   countryFlag String
-  nationalId String 
-  booking Bookings? @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  bookingId Int? @unique
+  nationalId String
+  bookings Bookings[]
   updated DateTime @default(now())
 }
 
@@ -56,7 +54,9 @@ model Bookings {
   hasBreakfast Boolean
   hasPaid Boolean
   notes String
-  cabins Cabin?
-  guest Guests?
+  cabin Cabin @relation(fields: [cabinId], references: [id])
+  cabinId Int
+  guest Guests @relation(fields: [guestId], references: [id])
+  guestId Int
   updated DateTime @default(now())
 }

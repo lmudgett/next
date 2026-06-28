@@ -35,7 +35,12 @@ const row = {
   hasBreakfast: true,
   hasPaid: true,
   notes: "",
+  cabinId: 10,
+  guestId: 20,
   updated: new Date(),
+  // relations included by the data layer's findMany
+  cabin: { name: "001" },
+  guest: { fullName: "Jane Cooper", countryFlag: "🇺🇸" },
 };
 
 describe("getAllBookings (service)", () => {
@@ -50,6 +55,11 @@ describe("getAllBookings (service)", () => {
       totalPrice: 660,
       status: "confirmed",
       hasPaid: true,
+      cabinId: 10,
+      guestId: 20,
+      cabinName: "001",
+      guestName: "Jane Cooper",
+      guestCountryFlag: "🇺🇸",
     });
   });
 
