@@ -2,6 +2,9 @@ import { Suspense, cache } from "react";
 import type { Metadata } from "next";
 import { BookingsTable } from "@/components/bookings/BookingsTable";
 import { getAllBookingsAction } from "@/server/actions/bookings";
+import { getAllCabinsAction } from "@/server/actions/cabins";
+import { getAllGuestsAction } from "@/server/actions/guests";
+import { getSettingsAction } from "@/server/actions/settings";
 import { TableSkeleton } from "@/components/ui/Skeleton";
 
 // Render dynamically so the data below actually streams on each request.
@@ -23,21 +26,32 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 async function BookingsContent() {
-  const { success, bookings, message } = await getBookings();
+  // Bookings plus the reference data the "new booking" form needs.
+  const [bookingsRes, cabinsRes, guestsRes, settingsRes] = await Promise.all([
+    getBookings(),
+    getAllCabinsAction(),
+    getAllGuestsAction(),
+    getSettingsAction(),
+  ]);
 
-  if (!success) {
+  if (!bookingsRes.success) {
     return (
       <p>
         Sorry, there was a problem listing the bookings. Please contact the
         admin:
-        <pre>{message}</pre>
+        <pre>{bookingsRes.message}</pre>
       </p>
     );
   }
 
   return (
     <div className="row-vertical">
-      <BookingsTable bookings={bookings} />
+      <BookingsTable
+        bookings={bookingsRes.bookings}
+        cabins={cabinsRes.cabins ?? []}
+        guests={guestsRes.guests ?? []}
+        breakfastPrice={settingsRes.settings?.breakfastPrice ?? 0}
+      />
     </div>
   );
 }

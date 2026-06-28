@@ -96,14 +96,6 @@ export const CabinTableRow: React.FC<CabinTableRowProps> = ({ cabin }) => {
               <Menu.ToggleButton id={id}>
                 {(closeMenu) => (
                   <>
-                    <ToastConfirmation
-                      buttonName="Confirm Delete"
-                      messageBody={`Are you sure you want to delete cabin ${cabin.name}?`}
-                      handleConfirm={handleDelete}
-                      isPending={isDeletePending}
-                    >
-                      <Menu.Button icon={<HiTrash />}>Delete</Menu.Button>
-                    </ToastConfirmation>
                     <Modal>
                       <Modal.ButtonOpen>
                         <Menu.Button icon={<HiPencil />}>Edit</Menu.Button>
@@ -123,6 +115,14 @@ export const CabinTableRow: React.FC<CabinTableRowProps> = ({ cabin }) => {
                       isPending={isCopyPending}
                     >
                       <Menu.Button icon={<HiClipboard />}>Copy</Menu.Button>
+                    </ToastConfirmation>
+                    <ToastConfirmation
+                      buttonName="Confirm Delete"
+                      messageBody={`Are you sure you want to delete cabin ${cabin.name}?`}
+                      handleConfirm={handleDelete}
+                      isPending={isDeletePending}
+                    >
+                      <Menu.Button icon={<HiTrash />}>Delete</Menu.Button>
                     </ToastConfirmation>
                   </>
                 )}

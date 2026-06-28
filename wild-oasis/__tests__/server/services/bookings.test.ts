@@ -10,7 +10,11 @@ jest.mock("@prisma/client", () => {
 });
 
 import { PrismaClient } from "@prisma/client";
-import { getAllBookings, updateCabin } from "@/server/services/bookings";
+import {
+  getAllBookings,
+  updateCabin,
+  createBooking,
+} from "@/server/services/bookings";
 
 const { bookings } = new (PrismaClient as unknown as new () => {
   bookings: {
@@ -68,6 +72,19 @@ describe("getAllBookings (service)", () => {
     const res = await getAllBookings();
     expect(res.success).toBe(false);
     expect(res.message).toBe("db down");
+  });
+});
+
+describe("createBooking (service)", () => {
+  it("creates a booking with its cabin/guest foreign keys", async () => {
+    bookings.create.mockResolvedValue(row);
+    const res = await createBooking({ ...row });
+    expect(res.success).toBe(true);
+    expect(bookings.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ cabinId: 10, guestId: 20 }),
+      })
+    );
   });
 });
 

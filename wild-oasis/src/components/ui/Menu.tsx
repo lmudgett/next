@@ -3,15 +3,11 @@ import React, {
   createContext,
   useContext,
   useState,
-  useRef,
   useEffect,
-  useCallback,
-  //ReactElement,
 } from "react";
 import { createPortal } from "react-dom";
 import { HiEllipsisHorizontal } from "react-icons/hi2";
 import { useClickOutside } from "@/hooks/useClickOutside";
-import { useLockBodyScroll } from "@/hooks/useLockBodyScroll";
 
 type MenuContextType = {
   openMenuIndex: number | null;
@@ -25,7 +21,6 @@ type MenuProps = {
 
 type MenuToggleProps = {
   id: number;
-  //children?: ReactNode;
   children: (closeMenu: () => void) => ReactNode;
 };
 
@@ -40,7 +35,7 @@ const MenuContext = createContext<MenuContextType | undefined>(undefined);
 function useMenu() {
   const context = useContext(MenuContext);
   if (!context) {
-    throw new Error("useModal must be used in a <Modal> provider.");
+    throw new Error("Menu.* must be used inside a <Menu> provider.");
   }
   return context;
 }
@@ -62,50 +57,62 @@ const Menu: React.FC<MenuProps> & {
 const MenuToggleButton: React.FC<MenuToggleProps> = ({ id, children }) => {
   const { openMenuIndex, setOpenMenuIndex, onClose } = useMenu();
   const isOpen = openMenuIndex === id;
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const ref = useClickOutside<HTMLUListElement>(onClose);
-  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
-  const closeMenu = onClose;
+  const [position, setPosition] = useState<{
+    top: number;
+    right: number;
+  } | null>(null);
 
-  useLockBodyScroll(isOpen);
-  const updateMenuPosition = useCallback(() => {
-    if (!isOpen || !buttonRef.current) return;
-    const { bottom, left } = buttonRef.current.getBoundingClientRect();
-    setMenuPosition({
-      top: bottom + window.scrollY,
-      left: left + window.scrollX,
-    });
-  }, [isOpen]);
-
+  // Close on scroll (incl. the scrollable <main>) or resize so the popover
+  // never floats detached from its button — like the LinkedIn "···" menu.
   useEffect(() => {
-    if (isOpen) updateMenuPosition();
-  }, [isOpen, updateMenuPosition]);
+    if (!isOpen) return;
+    const close = () => onClose();
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => {
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
+    };
+  }, [isOpen, onClose]);
+
+  // Measure the button and anchor the popover under its right edge when opening
+  // (done in the handler so positioning never requires a setState-in-effect).
+  const toggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    if (isOpen) {
+      setOpenMenuIndex(null);
+      return;
+    }
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPosition({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+    setOpenMenuIndex(id);
+  };
 
   return (
     <div className="component-table-menu">
       <button
-        ref={buttonRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpenMenuIndex(isOpen ? null : id);
-        }}
+        onClick={toggle}
         className="component-table-menu-toggle"
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
       >
         <HiEllipsisHorizontal size={18} />
       </button>
       {isOpen &&
+        position &&
         createPortal(
           <ul
             ref={ref}
+            role="menu"
             className="component-table-menu-list"
             style={{
-              position: "absolute",
-              top: `${menuPosition.top}px`,
-              left: `${menuPosition.left}px`,
-              visibility: menuPosition.top === 0 ? "hidden" : "visible",
+              position: "fixed",
+              top: `${position.top}px`,
+              right: `${position.right}px`,
             }}
           >
-            {children(closeMenu)}
+            {children(onClose)}
           </ul>,
           document.body
         )}
@@ -115,14 +122,18 @@ const MenuToggleButton: React.FC<MenuToggleProps> = ({ id, children }) => {
 
 const MenuButton: React.FC<MenuButtonProps> = ({ onClick, icon, children }) => {
   return (
-    <li>
+    <li role="none">
       {onClick ? (
-        <button className="component-table-menu-button" onClick={onClick}>
+        <button
+          role="menuitem"
+          className="component-table-menu-button"
+          onClick={onClick}
+        >
           {icon}
           <span>{children}</span>
         </button>
       ) : (
-        <span className="component-table-menu-button">
+        <span role="menuitem" className="component-table-menu-button">
           {icon}
           <span>{children}</span>
         </span>

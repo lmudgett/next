@@ -3,12 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { AppPromise } from "@/types/app-promise";
 import { convertToApplicationError, ErrorType } from "@/types/errors";
 
-export async function getAllBookings(): Promise<Guests[]> {
-  const results = await prisma.guests.findMany();
-  return results;
+export async function getAllGuests(): Promise<Guests[]> {
+  return prisma.guests.findMany({ orderBy: { fullName: "asc" } });
 }
 
-export async function addCabin(
+export async function addGuest(
   data: Omit<Guests, "id" | "updated">
 ): Promise<AppPromise> {
   try {
