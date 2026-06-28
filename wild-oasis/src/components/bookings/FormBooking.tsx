@@ -1,9 +1,11 @@
 "use client";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { DateRange } from "react-day-picker";
+import { MdImportContacts } from "react-icons/md";
 import {
   bookingFormSchema,
   BookingFormInput,
@@ -17,6 +19,8 @@ import {
 } from "@/server/actions/bookings";
 import { formatDate, toDateInput, parseDateInput } from "@/lib/utils";
 import { AvailabilityCalendar } from "./AvailabilityCalendar";
+import { GuestPicker } from "./GuestPicker";
+import Modal from "@/components/ui/Modal";
 
 export type ExistingBooking = {
   cabinId: number;
@@ -53,7 +57,32 @@ type FormBookingProps = {
 const STATUSES = ["unconfirmed", "confirmed", "checked-in", "checked-out"];
 
 const FieldError = ({ message }: { message?: string }) =>
-  message ? <p className="text-red-600 text-[1.3rem]">{message}</p> : null;
+  message ? <p className="text-red-600 text-[1.3rem] mt-1">{message}</p> : null;
+
+// Consistent label + control row (avoids the modal-oriented .form-row grid,
+// which right-aligns any row containing a button).
+const Row = ({
+  label,
+  htmlFor,
+  align = "center",
+  children,
+}: {
+  label: string;
+  htmlFor?: string;
+  align?: "center" | "start";
+  children: React.ReactNode;
+}) => (
+  <div
+    className={`grid grid-cols-[10rem_1fr] gap-6 ${
+      align === "start" ? "items-start" : "items-center"
+    }`}
+  >
+    <label htmlFor={htmlFor} className="font-medium text-gray-600">
+      {label}
+    </label>
+    <div>{children}</div>
+  </div>
+);
 
 export const FormBooking = ({
   cabins,
@@ -99,6 +128,18 @@ export const FormBooking = ({
   const selectedCabinId = watch("cabinId");
   const startStr = watch("startDate");
   const endStr = watch("endDate");
+  const guestIdStr = watch("guestId");
+
+  // Local guest list so newly-created guests appear immediately.
+  const [guestList, setGuestList] = useState<GuestOption[]>(guests);
+  const selectedGuest = guestList.find((g) => String(g.id) === guestIdStr);
+
+  const handleSelectGuest = (guest: GuestOption) => {
+    setGuestList((prev) =>
+      prev.some((g) => g.id === guest.id) ? prev : [...prev, guest]
+    );
+    setValue("guestId", String(guest.id), { shouldValidate: true });
+  };
 
   const cabinBookings = existingBookings.filter(
     (b) => String(b.cabinId) === selectedCabinId
@@ -169,10 +210,16 @@ export const FormBooking = ({
   };
 
   return (
-    <form className="form-regular" onSubmit={handleSubmit(onSubmit)}>
-      <div className="form-row">
-        <label htmlFor="cabinId">Cabin</label>
-        <select id="cabinId" {...register("cabinId")}>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="form-regular max-w-3xl flex flex-col gap-5"
+    >
+      <Row label="Cabin" htmlFor="cabinId">
+        <select
+          id="cabinId"
+          className="w-full border border-gray-300 rounded px-3 py-2"
+          {...register("cabinId")}
+        >
           <option value="">Select a cabin…</option>
           {cabins.map((c) => (
             <option key={c.id} value={String(c.id)}>
@@ -181,24 +228,31 @@ export const FormBooking = ({
           ))}
         </select>
         <FieldError message={errors.cabinId?.message} />
-      </div>
+      </Row>
 
-      <div className="form-row">
-        <label htmlFor="guestId">Guest</label>
-        <select id="guestId" {...register("guestId")}>
-          <option value="">Select a guest…</option>
-          {guests.map((g) => (
-            <option key={g.id} value={String(g.id)}>
-              {g.countryFlag} {g.fullName}
-            </option>
-          ))}
-        </select>
+      <Row label="Guest">
+        <div className="flex items-center gap-3 flex-wrap">
+          <input type="hidden" {...register("guestId")} />
+          <span className={selectedGuest ? "font-medium" : "text-gray-500"}>
+            {selectedGuest
+              ? `${selectedGuest.countryFlag} ${selectedGuest.fullName}`
+              : "No guest selected"}
+          </span>
+          <Modal>
+            <Modal.ButtonOpen className="inline-flex items-center gap-2 button-type-secondary size-medium-button">
+              <MdImportContacts size={18} />
+              <span>Choose</span>
+            </Modal.ButtonOpen>
+            <Modal.Window>
+              <GuestPicker guests={guestList} onSelect={handleSelectGuest} />
+            </Modal.Window>
+          </Modal>
+        </div>
         <FieldError message={errors.guestId?.message} />
-      </div>
+      </Row>
 
-      {selectedCabinId ? (
-        <div className="form-row">
-          <label>Dates</label>
+      <Row label="Dates" align="start">
+        {selectedCabinId ? (
           <div>
             <AvailabilityCalendar
               bookings={cabinBookings}
@@ -215,49 +269,61 @@ export const FormBooking = ({
             <FieldError message={errors.startDate?.message} />
             <FieldError message={errors.endDate?.message} />
           </div>
-        </div>
-      ) : (
-        <p className="text-gray-500">Select a cabin to choose available dates.</p>
-      )}
+        ) : (
+          <p className="text-gray-500">
+            Select a cabin to choose available dates.
+          </p>
+        )}
+      </Row>
 
-      <div className="form-row">
-        <label htmlFor="numberOfGuests">Number of guests</label>
+      <Row label="Guests" htmlFor="numberOfGuests">
         <input
           id="numberOfGuests"
           type="number"
           min={1}
+          className="w-28"
           {...register("numberOfGuests", { valueAsNumber: true })}
         />
         <FieldError message={errors.numberOfGuests?.message} />
-      </div>
+      </Row>
 
-      <div className="form-row">
-        <label htmlFor="status">Status</label>
-        <select id="status" {...register("status")}>
+      <Row label="Status" htmlFor="status">
+        <select
+          id="status"
+          className="w-full border border-gray-300 rounded px-3 py-2"
+          {...register("status")}
+        >
           {STATUSES.map((s) => (
             <option key={s} value={s}>
               {s}
             </option>
           ))}
         </select>
-      </div>
+      </Row>
 
-      <div className="form-row">
-        <label htmlFor="hasBreakfast">Includes breakfast</label>
-        <input id="hasBreakfast" type="checkbox" {...register("hasBreakfast")} />
-      </div>
+      <Row label="Breakfast" htmlFor="hasBreakfast">
+        <input
+          id="hasBreakfast"
+          type="checkbox"
+          className="w-5 h-5 p-0"
+          {...register("hasBreakfast")}
+        />
+      </Row>
 
-      <div className="form-row">
-        <label htmlFor="hasPaid">Paid</label>
-        <input id="hasPaid" type="checkbox" {...register("hasPaid")} />
-      </div>
+      <Row label="Paid" htmlFor="hasPaid">
+        <input
+          id="hasPaid"
+          type="checkbox"
+          className="w-5 h-5 p-0"
+          {...register("hasPaid")}
+        />
+      </Row>
 
-      <div className="form-row">
-        <label htmlFor="notes">Notes</label>
-        <input id="notes" type="text" {...register("notes")} />
-      </div>
+      <Row label="Notes" htmlFor="notes">
+        <input id="notes" type="text" className="w-full" {...register("notes")} />
+      </Row>
 
-      <div className="form-row">
+      <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
         <button
           type="button"
           onClick={() => close()}
