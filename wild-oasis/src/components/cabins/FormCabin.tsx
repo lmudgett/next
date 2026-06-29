@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField } from "@/components/ui/FormField";
+import { Button } from "@/components/ui/Button";
 import { convertFileToBase64 } from "@/lib/fileToBase64";
 import { cabinSchema, CabinFormData } from "@/lib/validations/cabins";
 import { updateCabinAction } from "@/server/actions/cabins";
@@ -118,23 +119,18 @@ export const FormCabin = ({
       <FormField label="Picture" id="image" register={register} type="file" />
       <div className="form-row">
         {cabin && <input type="hidden" {...register("id")} />}
-        <button
-          type="button"
+        <Button
+          variant="secondary"
           onClick={() => {
             close();
             onFormEvent?.();
           }}
-          className="button-type-secondary size-medium-button"
         >
           Cancel
-        </button>
-        <button
-          className="button-type-primary size-medium-button"
-          disabled={isSubmitting}
-          type="submit"
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Saving..." : "Save Cabin"}
-        </button>
+        </Button>
       </div>
     </form>
   );

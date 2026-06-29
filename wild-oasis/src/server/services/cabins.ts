@@ -1,41 +1,19 @@
 import * as cabinDao from "@/server/data/cabins";
 import { AppPromise } from "@/types/app-promise";
 import { CabinFormData } from "@/lib/validations/cabins";
-import { Option, FilterType } from "@/server/data/filters";
 import { convertToApplicationError, ErrorType } from "@/types/errors";
 
 /**
  * get all cabins
  * @returns - true if successful with cabin list results or false with a message
  */
-export async function getAllCabins(options?: string[]): Promise<{
+export async function getAllCabins(): Promise<{
   success: boolean;
   cabins?: CabinFormData[];
   message?: string;
 }> {
   try {
-    const dbOptions: Option[] = [];
-    if (options) {
-      options.map((f) => {
-        switch (f) {
-          case "discount":
-            dbOptions.push({
-              field: "DISCOUNT",
-              value: "",
-              filterType: FilterType.NOT_NULL,
-            });
-          case "picture": {
-            dbOptions.push({
-              field: "DISCOUNT",
-              value: "",
-              filterType: FilterType.NOT_NULL,
-            });
-          }
-        }
-      });
-    }
-
-    const cabins = await cabinDao.getAllCabins(dbOptions);
+    const cabins = await cabinDao.getAllCabins();
 
     const cabinFormDataList: CabinFormData[] = cabins.map((c) => {
       let imageBase64 = "";

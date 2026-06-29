@@ -58,12 +58,28 @@ async function main() {
 
   const byName = Object.fromEntries(cabinRecords.map((c) => [c.name, c.id]));
 
+  // `createdAtDaysAgo` spreads booking dates across the past ~90 days so the
+  // dashboard's 7/30/90-day filter actually changes the bookings/sales totals.
+  const daysAgo = (days: number) =>
+    new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
   const bookings = [
-    { cabin: "001", guest: 0, startDate: "2026-07-01", endDate: "2026-07-06", numberOfNights: 5, numberOfGuests: 2, cabinPrice: 600, extraPrice: 60, totalPrice: 660, status: "confirmed", hasBreakfast: true, hasPaid: true, notes: "" },
-    { cabin: "002", guest: 1, startDate: "2026-07-10", endDate: "2026-07-13", numberOfNights: 3, numberOfGuests: 4, cabinPrice: 600, extraPrice: 0, totalPrice: 600, status: "unconfirmed", hasBreakfast: false, hasPaid: false, notes: "Late check-in" },
-    { cabin: "005", guest: 2, startDate: "2026-06-20", endDate: "2026-06-27", numberOfNights: 7, numberOfGuests: 2, cabinPrice: 1330, extraPrice: 70, totalPrice: 1400, status: "checked-in", hasBreakfast: true, hasPaid: true, notes: "" },
-    { cabin: "003", guest: 3, startDate: "2026-05-02", endDate: "2026-05-04", numberOfNights: 2, numberOfGuests: 3, cabinPrice: 400, extraPrice: 0, totalPrice: 400, status: "checked-out", hasBreakfast: false, hasPaid: true, notes: "" },
+    { cabin: "001", guest: 0, startDate: "2026-07-01", endDate: "2026-07-06", numberOfNights: 5, numberOfGuests: 2, cabinPrice: 600, extraPrice: 60, totalPrice: 660, status: "confirmed", hasBreakfast: true, hasPaid: true, notes: "", createdAtDaysAgo: 2 },
+    { cabin: "002", guest: 1, startDate: "2026-07-10", endDate: "2026-07-13", numberOfNights: 3, numberOfGuests: 4, cabinPrice: 600, extraPrice: 0, totalPrice: 600, status: "unconfirmed", hasBreakfast: false, hasPaid: false, notes: "Late check-in", createdAtDaysAgo: 20 },
+    { cabin: "005", guest: 2, startDate: "2026-06-20", endDate: "2026-06-27", numberOfNights: 7, numberOfGuests: 2, cabinPrice: 1330, extraPrice: 70, totalPrice: 1400, status: "checked-in", hasBreakfast: true, hasPaid: true, notes: "", createdAtDaysAgo: 50 },
+    { cabin: "003", guest: 3, startDate: "2026-05-02", endDate: "2026-05-04", numberOfNights: 2, numberOfGuests: 3, cabinPrice: 400, extraPrice: 0, totalPrice: 400, status: "checked-out", hasBreakfast: false, hasPaid: true, notes: "", createdAtDaysAgo: 85 },
   ];
+
+  // Two stays tied to the actual seed date so the dashboard's "Today's Activity"
+  // (arriving / departing today) always has something to check in / out.
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const dayOffsetStr = (d: number) =>
+    new Date(Date.now() + d * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  bookings.push(
+    { cabin: "004", guest: 0, startDate: todayStr, endDate: dayOffsetStr(4), numberOfNights: 4, numberOfGuests: 2, cabinPrice: 1000, extraPrice: 0, totalPrice: 1000, status: "unconfirmed", hasBreakfast: false, hasPaid: false, notes: "Arrives today", createdAtDaysAgo: 0 },
+    { cabin: "006", guest: 1, startDate: dayOffsetStr(-3), endDate: todayStr, numberOfNights: 3, numberOfGuests: 4, cabinPrice: 2400, extraPrice: 0, totalPrice: 2400, status: "checked-in", hasBreakfast: false, hasPaid: true, notes: "Departs today", createdAtDaysAgo: 1 }
+  );
 
   for (const b of bookings) {
     await prisma.bookings.create({
@@ -81,6 +97,7 @@ async function main() {
         notes: b.notes,
         cabinId: byName[b.cabin],
         guestId: guestRecords[b.guest].id,
+        createdAt: daysAgo(b.createdAtDaysAgo),
       },
     });
   }

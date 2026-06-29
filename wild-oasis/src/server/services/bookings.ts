@@ -80,3 +80,10 @@ export async function updateBooking(b: BookingsFormData): Promise<AppPromise> {
 export async function deleteBooking(id: number): Promise<AppPromise> {
   return bookingsDao.deleteBookings(id);
 }
+
+export async function setBookingStatus(
+  id: number,
+  status: string
+): Promise<AppPromise> {
+  return bookingsDao.setBookingStatus(id, status);
+}

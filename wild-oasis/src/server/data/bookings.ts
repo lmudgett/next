@@ -42,7 +42,7 @@ export async function deleteBookings(id: number): Promise<AppPromise> {
 }
 
 export async function addBookings(
-  data: Omit<Bookings, "id" | "updated">
+  data: Omit<Bookings, "id" | "updated" | "createdAt">
 ): Promise<AppPromise> {
   try {
     await prisma.bookings.create({ data });
@@ -53,9 +53,22 @@ export async function addBookings(
   }
 }
 
+export async function setBookingStatus(
+  id: number,
+  status: string
+): Promise<AppPromise> {
+  try {
+    await prisma.bookings.update({ where: { id }, data: { status } });
+    return { success: true };
+  } catch (error) {
+    const appErr = convertToApplicationError(error, ErrorType.DATABASE);
+    return { success: false, appError: appErr };
+  }
+}
+
 export async function updateBookings(
   id: number,
-  data: Omit<Bookings, "id" | "updated">
+  data: Omit<Bookings, "id" | "updated" | "createdAt">
 ): Promise<AppPromise> {
   try {
     await prisma.bookings.update({

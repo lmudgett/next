@@ -6,7 +6,7 @@ import { CabinFormData } from "@/lib/validations/cabins";
 import { CabinTableRow } from "./CabinTableRow";
 import Table from "@/components/ui/Table";
 import { Sort } from "@/components/ui/Sort";
-import Filter from "@/components/ui/Filter";
+import { buttonClasses } from "@/components/ui/Button";
 
 type CabinBooking = {
   cabinId: number;
@@ -38,15 +38,6 @@ export const CabinTable: React.FC<CabinTableProps> = ({
 
   return (
     <>
-      <Filter
-        name="cabinFilter"
-        label="Filter"
-        className="flex justify-end space-x-4 items-center"
-      >
-        <Filter.Option name="All" value="all" />
-        <Filter.Option name="Discount" value="discount" />
-        <Filter.Option name="No Discount" value="no_discount" />
-      </Filter>
       <Table>
         <Table.Header className="table-cols-6">
           <div></div>
@@ -109,7 +100,7 @@ export const CabinTable: React.FC<CabinTableProps> = ({
       </Table>
       <Link
         href="/cabins/create"
-        className="button-type-primary size-medium-button text-center"
+        className={buttonClasses("primary", "medium", "text-center")}
       >
         Add Cabin
       </Link>

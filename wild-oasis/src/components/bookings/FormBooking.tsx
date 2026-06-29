@@ -21,6 +21,8 @@ import { formatDate, toDateInput, parseDateInput } from "@/lib/utils";
 import { AvailabilityCalendar } from "./AvailabilityCalendar";
 import { GuestPicker } from "./GuestPicker";
 import Modal from "@/components/ui/Modal";
+import { Button, buttonClasses } from "@/components/ui/Button";
+import { FieldError } from "@/components/ui/FieldError";
 
 export type ExistingBooking = {
   cabinId: number;
@@ -55,9 +57,6 @@ type FormBookingProps = {
 };
 
 const STATUSES = ["unconfirmed", "confirmed", "checked-in", "checked-out"];
-
-const FieldError = ({ message }: { message?: string }) =>
-  message ? <p className="text-red-600 text-[1.3rem] mt-1">{message}</p> : null;
 
 // Consistent label + control row (avoids the modal-oriented .form-row grid,
 // which right-aligns any row containing a button).
@@ -239,7 +238,13 @@ export const FormBooking = ({
               : "No guest selected"}
           </span>
           <Modal>
-            <Modal.ButtonOpen className="inline-flex items-center gap-2 button-type-secondary size-medium-button">
+            <Modal.ButtonOpen
+              className={buttonClasses(
+                "secondary",
+                "medium",
+                "inline-flex items-center gap-2"
+              )}
+            >
               <MdImportContacts size={18} />
               <span>Choose</span>
             </Modal.ButtonOpen>
@@ -324,24 +329,16 @@ export const FormBooking = ({
       </Row>
 
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
-        <button
-          type="button"
-          onClick={() => close()}
-          className="button-type-secondary size-medium-button"
-        >
+        <Button variant="secondary" onClick={() => close()}>
           Cancel
-        </button>
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="button-type-primary size-medium-button"
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting}>
           {isSubmitting
             ? "Saving..."
             : bookingId
             ? "Update Booking"
             : "Create Booking"}
-        </button>
+        </Button>
       </div>
     </form>
   );

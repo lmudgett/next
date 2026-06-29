@@ -60,3 +60,15 @@ export const cancelBookingAction = async (id: number): Promise<AppPromise> => {
   }
   return res;
 };
+
+export const setBookingStatusAction = async (
+  id: number,
+  status: string
+): Promise<AppPromise> => {
+  const res = await bookingsUC.setBookingStatus(id, status);
+  if (res.success) {
+    revalidatePath("/dashboard");
+    revalidatePath("/bookings");
+  }
+  return res;
+};

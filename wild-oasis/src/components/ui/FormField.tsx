@@ -1,4 +1,5 @@
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
+import { FieldError } from "./FieldError";
 
 type FormFieldProps<T extends FieldValues> = {
   id: Path<T>;
@@ -34,7 +35,7 @@ export const FormField = <T extends FieldValues>({
         })}
         onBlur={onBlur}
       />
-      {error && <p className="text-red-600">{error.message}</p>}
+      <FieldError message={error?.message} />
     </div>
   );
 };

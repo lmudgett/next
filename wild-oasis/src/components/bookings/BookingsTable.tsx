@@ -4,6 +4,7 @@ import { BookingsFormData } from "@/lib/validations/bookings";
 import { CabinFormData } from "@/lib/validations/cabins";
 import type { GuestOption } from "@/server/services/guests";
 import Table from "@/components/ui/Table";
+import { buttonClasses } from "@/components/ui/Button";
 import { BookingTableRow, bookingColumns } from "./BookingTableRow";
 
 type BookingsTableProps = {
@@ -47,7 +48,7 @@ export const BookingsTable: React.FC<BookingsTableProps> = ({
       </Table>
       <Link
         href="/bookings/create"
-        className="button-type-primary size-medium-button text-center"
+        className={buttonClasses("primary", "medium", "text-center")}
       >
         Add Booking
       </Link>

@@ -6,6 +6,7 @@ import { getAllCabinsAction } from "@/server/actions/cabins";
 import { getAllGuestsAction } from "@/server/actions/guests";
 import { getSettingsAction } from "@/server/actions/settings";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
 
 // Render dynamically so the data below actually streams on each request.
 export const dynamic = "force-dynamic";
@@ -35,13 +36,7 @@ async function BookingsContent() {
   ]);
 
   if (!bookingsRes.success) {
-    return (
-      <p>
-        Sorry, there was a problem listing the bookings. Please contact the
-        admin:
-        <pre>{bookingsRes.message}</pre>
-      </p>
-    );
+    return <ErrorMessage resource="bookings" message={bookingsRes.message} />;
   }
 
   return (

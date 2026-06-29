@@ -9,9 +9,9 @@ export default function AuthLayout({
 }) {
   return (
     <div className="grid grid-cols-[26rem_1fr] grid-rows-[auto_1fr] h-screen">
-      <Header />
       <SideBar />
-      <main className="bg-gray-50 p-[4rem_4.8rem_6.4rem] overflow-scroll">
+      <Header />
+      <main className="col-start-2 row-start-2 bg-gray-50 p-[4rem_4.8rem_6.4rem] overflow-scroll">
         <div className="container">{children}</div>
       </main>
       <Toaster

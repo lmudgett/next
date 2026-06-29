@@ -36,7 +36,6 @@ export const CabinTableRow: React.FC<CabinTableRowProps> = ({
     startDeleteTransition(async () => {
       if (id) {
         const res = await deleteCabinAction(id);
-        console.log(res);
         if (res.success) {
           toast.success(`Cabin ${name} has been deleted`);
         } else {

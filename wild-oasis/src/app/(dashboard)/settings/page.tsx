@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { FormSettings } from "@/components/settings/FormSettings";
 import { getSettingsAction } from "@/server/actions/settings";
 import { FormSkeleton } from "@/components/ui/Skeleton";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
 
 // Render dynamically so the settings form streams on each request.
 export const dynamic = "force-dynamic";
@@ -24,12 +25,7 @@ async function SettingsContent() {
   const { success, settings, message } = await getSettings();
 
   if (!success) {
-    return (
-      <p>
-        Sorry there was a problem with listing the setting, please contact the
-        admin with these details:<pre>{message}</pre>
-      </p>
-    );
+    return <ErrorMessage resource="settings" message={message} />;
   }
 
   return <FormSettings settings={settings} />;

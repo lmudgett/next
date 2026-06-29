@@ -9,7 +9,7 @@ export const SideBar = async () => {
   const session = await getSession();
 
   return (
-    <aside className="p-[3.2rem_2.4rem] flex flex-col row-span-full gap-[3.2rem] border-r border-gray-100">
+    <aside className="col-start-1 row-span-full p-[3.2rem_2.4rem] flex flex-col gap-[3.2rem] border-r border-gray-100">
       <div className="px-[3.80rem] pb-3">
         <Image
           src={logo}

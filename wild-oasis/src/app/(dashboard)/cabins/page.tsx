@@ -4,6 +4,7 @@ import { CabinTable } from "@/components/cabins/CabinTable";
 import { getAllCabinsAction } from "@/server/actions/cabins";
 import { getAllBookingsAction } from "@/server/actions/bookings";
 import { TableSkeleton } from "@/components/ui/Skeleton";
+import { ErrorMessage } from "@/components/ui/ErrorMessage";
 import "./style.css";
 
 // Render dynamically so the data below actually streams on each request.
@@ -28,12 +29,7 @@ async function CabinsContent() {
   ]);
 
   if (!success) {
-    return (
-      <p>
-        Sorry, there was a problem listing the cabins. Please contact the admin:
-        <pre>{message}</pre>
-      </p>
-    );
+    return <ErrorMessage resource="cabins" message={message} />;
   }
 
   const bookings = (bookingsRes.bookings ?? []).map((b) => ({

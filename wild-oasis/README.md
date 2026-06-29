@@ -1,13 +1,28 @@
 # The Wild Oasis — Hotel Management
 
-A staff-facing booking-management app for a boutique cabin hotel: manage cabins,
-guests, bookings, and hotel settings. Built as a portfolio piece to demonstrate
-a clean, layered architecture on a modern Next.js stack.
+A staff-facing booking-management app for a boutique cabin hotel: an at-a-glance
+dashboard plus management of cabins, bookings, staff users, and hotel settings.
+Built as a portfolio piece to demonstrate a clean, layered architecture on a
+modern Next.js stack.
 
 > Showcase project — designed to be read and run locally, not deployed. It ships
 > with a seeded SQLite database so you can `clone → install → seed → dev`.
 
-![Bookings page — cabin, guest, dates, status, amount and payment status](docs/bookings.png)
+![Dashboard — date-range stats, today's check-ins/outs, and stay-duration breakdown](docs/dashboard.png)
+
+## Features
+
+- **Dashboard** — a 7/30/90-day filter drives four live stats (bookings, sales,
+  check-ins, occupancy rate), a "Today" feed with one-click check-in / check-out,
+  and a stay-duration breakdown.
+- **Bookings** — sortable table with inline edit (modal) and cancel; a booking
+  form with a cabin-availability calendar and guest picker.
+- **Cabins** — sortable table with create, edit, duplicate, delete, and a
+  per-cabin availability view.
+- **Users** — create staff logins and review existing accounts.
+- **Settings** — hotel-wide booking limits and breakfast price.
+
+![Bookings — cabin, guest, dates, status, amount and payment status](docs/bookings.png)
 
 ## Tech stack
 
@@ -55,8 +70,8 @@ src/
   app/                 # routes only — pages, layouts, route groups
     (dashboard)/       # authenticated-area shell (sidebar + header)
   components/
-    ui/                # reusable primitives (Table, Modal, Sort, Filter, …)
-    cabins/  bookings/  settings/   # feature components
+    ui/                # reusable primitives (Button, Table, Modal, Sort, Tag, …)
+    dashboard/ bookings/ cabins/ users/ settings/   # feature components
   hooks/               # shared client hooks (useClickOutside, …)
   lib/
     prisma.ts          # single PrismaClient (driver adapter)
@@ -98,8 +113,10 @@ __tests__/             # unit tests, mirroring src/
 
 ## Data model
 
-`Bookings` belongs to a `Cabin` and a `Guests` via foreign keys; a cabin and a
-guest each have many bookings. `Settings` holds hotel-wide configuration.
+`Bookings` belongs to a `Cabin` and a `Guests` via foreign keys (and carries a
+`createdAt` that feeds the dashboard's recent-activity stats); a cabin and a
+guest each have many bookings. `Settings` holds hotel-wide configuration, and
+`User` backs staff authentication.
 
 ## Testing
 

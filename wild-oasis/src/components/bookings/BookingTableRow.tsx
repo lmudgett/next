@@ -13,6 +13,7 @@ import {
   utcToLocalDay,
 } from "@/lib/utils";
 import Table from "@/components/ui/Table";
+import { Tag } from "@/components/ui/Tag";
 import Modal from "@/components/ui/Modal";
 import Menu from "@/components/ui/Menu";
 import { ToastConfirmation } from "@/components/ui/ToastConfirmation";
@@ -100,11 +101,7 @@ export const BookingTableRow = ({
       </div>
 
       <div>
-        <span
-          className={`inline-block uppercase text-[1.1rem] font-semibold px-3 py-1 rounded-full ${badge}`}
-        >
-          {status}
-        </span>
+        <Tag className={badge}>{status}</Tag>
       </div>
 
       <div className={`font-semibold ${sono.className}`}>

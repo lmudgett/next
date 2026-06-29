@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/lib/validations/auth";
 import { loginAction } from "@/server/actions/auth";
+import { Button } from "@/components/ui/Button";
+import { FieldError } from "@/components/ui/FieldError";
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -45,9 +47,7 @@ export const LoginForm = () => {
           className="w-full"
           {...register("email")}
         />
-        {errors.email && (
-          <p className="text-red-600 text-[1.3rem]">{errors.email.message}</p>
-        )}
+        <FieldError message={errors.email?.message} />
       </div>
 
       <div className="flex flex-col gap-1">
@@ -61,22 +61,14 @@ export const LoginForm = () => {
           className="w-full"
           {...register("password")}
         />
-        {errors.password && (
-          <p className="text-red-600 text-[1.3rem]">{errors.password.message}</p>
-        )}
+        <FieldError message={errors.password?.message} />
       </div>
 
-      {errors.root && (
-        <p className="text-red-600 text-[1.3rem]">{errors.root.message}</p>
-      )}
+      <FieldError message={errors.root?.message} />
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="button-type-primary size-medium-button text-center"
-      >
+      <Button type="submit" disabled={isSubmitting} className="text-center">
         {isSubmitting ? "Signing in..." : "Sign in"}
-      </button>
+      </Button>
     </form>
   );
 };
